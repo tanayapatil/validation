@@ -40,7 +40,7 @@ const FormComonent = () => {
 
                     {/* personal details start   */}
                     <Row>
-                        <Col lg={5} className='textHeading mt-2'>Personal Details</Col>
+                        <Col lg={5} className='textHeading mt-2'>Personal Detail</Col>
                     </Row>
                     <Row>
                         <Col lg={5}>
