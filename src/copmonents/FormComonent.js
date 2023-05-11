@@ -146,7 +146,7 @@ const FormComonent = () => {
 
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="3">
-                                    <span className='labelStyle'>Guardian Details</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>Guardian Detail</span><sup style={{ color: 'red' }}>*</sup>
                                 </Form.Label>
                                 <Col lg="4" >
                                     <Form.Select aria-label="Default select example">
