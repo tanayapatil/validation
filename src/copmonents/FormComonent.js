@@ -1,42 +1,76 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container'
 import './FormComponent.css'
-import {useFormik} from 'formik'
+import { useFormik } from 'formik'
 import { submitSchema } from '../schemas';
 
 
 const FormComonent = () => {
-    // const [name, setName] = useState('')
-    // const [age, setAge] = useState('')
-    // const [gender, setGender] = useState('')
 
-    
 
-   
-    const initialValues={
-        name:"",
-        age:"",
-        gender:""
+
+
+
+    const initialValues = {
+        name: "",
+        age: "",
+        gender: "",
+        mobile: "",
+        governmentIdType: "",
+        governmentIdAdhar: "",
+        governmentIdPan: "",
+        emergencyNo: "",
+        email: "",
+        guardianLabel: "",
+        natinality: "india"
     }
-    const {values,errors,handleChange,handleSubmit,touched,handleBlur}=useFormik({
-         initialValues:initialValues,
-         validationSchema:submitSchema,
-         onSubmit:(values)=>{
+    const { values, errors, handleChange, handleSubmit, touched, handleBlur,resetForm } = useFormik({
+        initialValues: initialValues,
+        validationSchema: submitSchema,
+        onSubmit: async(values) => {
             console.log(values)
-         }
+           try{
+            const result = await fetch('http://localhost:2000/api/addUserData', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: values.name,
+                    age: values.age,
+                    gender: values.gender,
+                    mobile: values.mobile,
+                    identity:values.governmentIdType,
+                    adharNo:values.governmentIdAdhar,
+                    panNo: values.governmentIdPan,
+                    guardian:values.guardianLabel,
+                    nationality:values.natinality
+    
+                })
+            })
+            const responce= await result.json()
+            resetForm({values:''})
+
+        }catch(error){
+            console.log(error)
+        }
+           
+        }
     })
     // console.log(Formik)
     console.log(values)
     console.log(errors)
-    
+
+
+   
 
     return (
         <>
-            <Container>
-                <Form onSubmit={handleSubmit}>
+            <Container className='mt-3'>
+                <Form onSubmit={ handleSubmit}>
 
                     {/* personal details start   */}
                     <Row>
@@ -51,8 +85,8 @@ const FormComonent = () => {
                                 </Form.Label>
                                 <Col lg="10" >
                                     <Form.Control type="text" placeholder="Enter Name" name="name" value={values.name} onChange={handleChange} onBlur={handleBlur}
-                                     required />
-                                   {errors.name && touched.name ?  <p className='errorStyle'>{errors.name}</p> : null} 
+                                        required />
+                                    {errors.name && touched.name ? <p className='errorStyle'>{errors.name}</p> : null}
                                 </Col>
                             </Form.Group>
 
@@ -60,11 +94,11 @@ const FormComonent = () => {
                         <Col lg={4}>
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="4">
-                                    <span className='labelStyle'>Date of Birth or Age</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'> Age</span><sup style={{ color: 'red' }}>*</sup>
                                 </Form.Label>
                                 <Col lg="8" >
                                     <Form.Control type="text" placeholder="Enter Age in Years" name="age" value={values.age} onChange={handleChange} onBlur={handleBlur} required />
-                                    {errors.age && touched.age ?  <p className='errorStyle'>{errors.age}</p> : null}
+                                    {errors.age && touched.age ? <p className='errorStyle'>{errors.age}</p> : null}
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -81,14 +115,14 @@ const FormComonent = () => {
                                         value={values.gender} onChange={handleChange}
                                         onBlur={handleBlur}
 
-                      
+
                                     >
                                         <option value='' >Enter Sex</option>
                                         <option value="male">Male</option>
                                         <option value="female">Female</option>
                                         <option value="other">Other</option>
                                     </Form.Control>
-                                    {errors.gender && touched.gender ? <p className='errorStyle'>{errors.gender}</p> :null}
+                                    {errors.gender && touched.gender ? <p className='errorStyle'>{errors.gender}</p> : null}
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -103,7 +137,10 @@ const FormComonent = () => {
                                     <span className='labelStyle'>Mobile</span><sup style={{ color: 'red' }}>*</sup>
                                 </Form.Label>
                                 <Col lg="8" >
-                                    <Form.Control type="text" placeholder="Enter Mobile" required />
+                                    <Form.Control type="text" placeholder="Enter Mobile" name="mobile" value={values.mobile} onChange={handleChange}
+                                        onBlur={handleBlur} required />
+                                    {errors.mobile && touched.mobile ? <p className='errorStyle'>{errors.mobile}</p> : null}
+
                                 </Col>
                             </Form.Group>
 
@@ -115,12 +152,22 @@ const FormComonent = () => {
                                     <span className='labelStyle'>Government Issued Id</span><sup style={{ color: 'red' }}>*</sup>
                                 </Form.Label>
                                 <Col lg="8" >
-                                    <Form.Select aria-label="Default select example">
-                                        <option>Id Type</option>
-                                        <option value="1">Adharcard</option>
-                                        <option value="2">Pancard</option>
 
-                                    </Form.Select>
+                                    <Form.Control
+                                        as="select"
+                                        name="governmentIdType"
+                                        value={values.governmentIdType} onChange={handleChange}
+                                        onBlur={handleBlur}
+
+
+
+                                    >
+                                        <option value='' >Select Id type</option>
+                                        <option value="adhar">Adharcard</option>
+                                        <option value="pan">Pancard</option>
+
+                                    </Form.Control>
+                                    {errors.governmentIdType && touched.governmentIdType ? <p className='errorStyle'>{errors.governmentIdType}</p> : null}
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -130,7 +177,18 @@ const FormComonent = () => {
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
 
                                 <Col lg="8" >
-                                    <Form.Control type="text" placeholder="Enter GovernmentId" required />
+                                    {values.governmentIdType === 'adhar' ? <>  <Form.Control type="text" placeholder="Enter Adharcard no" name="governmentIdAdhar" value={values.governmentIdAdhar} onChange={handleChange}
+                                        onBlur={handleBlur} required />
+                                        {errors.governmentIdAdhar && touched.governmentIdAdhar ? <p className='errorStyle'>{errors.governmentIdAdhar}</p> : null}
+                                    </>
+
+                                        :
+
+                                        <> <Form.Control type="text" placeholder="Enter pancard no" name="governmentIdPan" value={values.governmentIdPan} onChange={handleChange}
+                                            onBlur={handleBlur} required />
+                                            {errors.governmentIdPan && touched.governmentIdPan ? <p className='errorStyle'>{errors.governmentIdPan}</p> : null}
+                                        </>}
+
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -146,19 +204,36 @@ const FormComonent = () => {
 
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="3">
-                                    <span className='labelStyle'>Guardian Details</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>Guardian Detail</span>
                                 </Form.Label>
                                 <Col lg="4" >
-                                    <Form.Select aria-label="Default select example">
+                                    {/* <Form.Select aria-label="Default select example">
                                         <option>Enter label</option>
                                         <option value="1">Mother</option>
                                         <option value="2">Father</option>
                                         <option value="3">Other</option>
 
-                                    </Form.Select>
+                                    </Form.Select> */}
+                                    <Form.Control
+                                        as="select"
+                                        name="guardianLabel"
+                                        value={values.guardianLabel} onChange={handleChange}
+                                        onBlur={handleBlur}
+
+
+
+                                    >
+                                        <option value='' >Select guardian </option>
+                                        <option value="mother">Mother</option>
+                                        <option value="father">Father</option>
+                                        <option value="other">Other</option>
+
+
+                                    </Form.Control>
                                 </Col>
                                 <Col lg="5" >
-                                    <Form.Control type="text" placeholder="Enter Guardian Name" required />
+                                    <Form.Control type="text" placeholder="Enter Guardian Name" name="guardianName" value={values.guardianName} onChange={handleChange}
+                                        onBlur={handleBlur} />
                                 </Col>
                             </Form.Group>
 
@@ -170,7 +245,8 @@ const FormComonent = () => {
                                     <span className='labelStyle'>Email</span><sup style={{ color: 'red' }}>*</sup>
                                 </Form.Label>
                                 <Col lg="10" >
-                                    <Form.Control type="text" placeholder="Enter Email" required />
+                                    <Form.Control type="text" placeholder="Enter Email" name='email' value={values.email} onChange={handleChange} onBlur={handleBlur} required />
+                                    {errors.email && touched.email ? <p className='errorStyle'>{errors.email}</p> : null}
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -182,7 +258,8 @@ const FormComonent = () => {
                                     <span className='labelStyle'>Emergency Contact No</span><sup style={{ color: 'red' }}>*</sup>
                                 </Form.Label>
                                 <Col lg="7" >
-                                    <Form.Control type="text" placeholder="Emergency Contact No" required />
+                                    <Form.Control type="text" placeholder="Emergency Contact No" name="emergencyNo" value={values.emergencyNo} onChange={handleChange} onBlur={handleBlur} required />
+                                    {errors.emergencyNo && touched.emergencyNo ? <p className='errorStyle'>{errors.emergencyNo}</p> : null}
                                 </Col>
                             </Form.Group>
 
@@ -207,10 +284,10 @@ const FormComonent = () => {
 
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="2">
-                                    <span className='labelStyle'>Address</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>Address</span>
                                 </Form.Label>
                                 <Col lg="10" >
-                                    <Form.Control type="text" placeholder="Enter Address" required />
+                                    <Form.Control type="text" placeholder="Enter Address" />
                                 </Col>
                             </Form.Group>
 
@@ -219,10 +296,10 @@ const FormComonent = () => {
                         <Col lg={3}>
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="2">
-                                    <span className='labelStyle'>State</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>State</span>
                                 </Form.Label>
                                 <Col lg="10" >
-                                    <Form.Control type="text" placeholder="Enter State" required />
+                                    <Form.Control type="text" placeholder="Enter State" />
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -231,10 +308,10 @@ const FormComonent = () => {
 
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="2">
-                                    <span className='labelStyle'>City</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>City</span>
                                 </Form.Label>
                                 <Col lg="10" >
-                                    <Form.Control type="text" placeholder="Enter City/Town/Viilage" required />
+                                    <Form.Control type="text" placeholder="Enter City/Town/Viilage" />
                                 </Col>
                             </Form.Group>
 
@@ -246,10 +323,10 @@ const FormComonent = () => {
 
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="2">
-                                    <span className='labelStyle'>Country</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>Country</span>
                                 </Form.Label>
                                 <Col lg="10" >
-                                    <Form.Control type="text" placeholder="Enter Country" required />
+                                    <Form.Control type="text" placeholder="Enter Country" />
                                 </Col>
                             </Form.Group>
 
@@ -258,10 +335,10 @@ const FormComonent = () => {
                         <Col lg={3}>
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="3">
-                                    <span className='labelStyle'>Pincode</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>Pincode</span>
                                 </Form.Label>
                                 <Col lg="9" >
-                                    <Form.Control type="text" placeholder="Enter Pincode" required />
+                                    <Form.Control type="text" placeholder="Enter Pincode" />
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -282,10 +359,10 @@ const FormComonent = () => {
 
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="3">
-                                    <span className='labelStyle'>Occupation</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>Occupation</span>
                                 </Form.Label>
                                 <Col lg="9" >
-                                    <Form.Control type="text" placeholder="Enter Occupation" required />
+                                    <Form.Control type="text" placeholder="Enter Occupation" />
                                 </Col>
                             </Form.Group>
 
@@ -295,10 +372,10 @@ const FormComonent = () => {
                         <Col lg={3}>
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="3">
-                                    <span className='labelStyle'>Religion</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>Religion</span>
                                 </Form.Label>
                                 <Col lg="9" >
-                                    <Form.Control type="text" placeholder="Enter Religion" required />
+                                    <Form.Control type="text" placeholder="Enter Religion" />
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -307,7 +384,7 @@ const FormComonent = () => {
 
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="2">
-                                    <span className='labelStyle'>Maretial status</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>Maretial status</span>
                                 </Form.Label>
                                 <Col lg="7" >
                                     <Form.Select aria-label="Default select example">
@@ -330,7 +407,7 @@ const FormComonent = () => {
 
                             <Form.Group as={Row} className="mb-3 mt-3" controlId="formPlaintextPassword">
                                 <Form.Label column lg="3">
-                                    <span className='labelStyle'>Blood Group</span><sup style={{ color: 'red' }}>*</sup>
+                                    <span className='labelStyle'>Blood Group</span>
                                 </Form.Label>
                                 <Col lg="6" >
                                     <Form.Select aria-label="Default select example">
@@ -352,7 +429,7 @@ const FormComonent = () => {
                                     <span className='labelStyle'>Natinality</span><sup style={{ color: 'red' }}>*</sup>
                                 </Form.Label>
                                 <Col lg="9" >
-                                    <Form.Control type="text" placeholder="Enter Nationality" required />
+                                    <Form.Control type="text" placeholder="Enter Nationality" name="natinality" value={values.natinality} onBlur={handleBlur} required />
                                 </Col>
                             </Form.Group>
                         </Col>
@@ -372,7 +449,7 @@ const FormComonent = () => {
                     </Row>
 
                     {/* other details ends --------------- */}
-                   
+
 
 
                 </Form>
